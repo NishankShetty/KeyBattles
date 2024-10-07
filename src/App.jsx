@@ -3,6 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.scss";
 //npm run dev to start
+//Nishank Shetty
 const sampleText =
   "examples of simple sentences include the following joe waited for the train was late mary and samantha took the bus";
 
