@@ -77,14 +77,15 @@ html {
 }
 
 .powerUps-container {
+  width: 20rem;
   display: flex;
   justify-self: center;
   justify-content: space-around;
   align-items: center; /* Center items vertically */
 
   .powerUp {
-    width: 7rem;
-    height: 4rem;
+    width: 5rem;
+    aspect-ratio: 2/2;
     border-width: 2px;
     border-color: grey;
     border-style: solid;
@@ -98,11 +99,7 @@ html {
 .blur {
   opacity: 0.25;
   filter: blur(4px);
-}
-
-.hidden {
-  display: none;
-  opacity: 0;
+  transition: filter 0.2s ease-in-out, opacity 0.2s ease-in-out;
 }
 
 .textArea {
@@ -118,6 +115,16 @@ html {
 
   &:focus {
     outline: none;
+  }
+
+  .outOfFocus {
+    display: none;
+  }
+
+  .hidden {
+    display: inline;
+    opacity: 1;
+    transition: display 1s ease-in-out 10s;
   }
 
   .inputText,
