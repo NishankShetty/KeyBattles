@@ -6,6 +6,7 @@
   text-align: center;
   object-fit: none;
   overflow: hidden;
+  user-select: none;
 }
 
 body,
@@ -30,6 +31,77 @@ html {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+.PlayersInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin-bottom: 2rem;
+
+  .Player {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: fit-content;
+    // background-color: red;
+
+    .userName-container {
+      // background-color: blue;
+      width: 15%;
+      .userName {
+        font-size: 1rem;
+      }
+    }
+
+    .progress-bar-container {
+      width: 70%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+
+      .progress-bar {
+        height: 1rem;
+        background-color: rgb(199, 39, 199); //#76c7c0;
+        border-radius: 5px;
+      }
+    }
+
+    .statistics-container {
+      width: 15%;
+      // background-color: green;
+    }
+  }
+}
+
+.powerUps-container {
+  width: 20rem;
+  display: flex;
+  justify-self: center;
+  justify-content: space-around;
+  align-items: center; /* Center items vertically */
+
+  .powerUp {
+    width: 5rem;
+    aspect-ratio: 2/2;
+    border-width: 2px;
+    border-color: grey;
+    border-style: solid;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.blur {
+  opacity: 0.25;
+  filter: blur(4px);
+  transition: filter 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
 .textArea {
   width: 100%;
   min-height: 10rem;
@@ -38,17 +110,36 @@ html {
   position: relative;
   overflow: hidden;
   user-select: none;
+  margin-bottom: 4rem;
+  -webkit-user-select: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  .outOfFocus {
+    display: none;
+  }
+
+  .hidden {
+    display: inline;
+    opacity: 1;
+    transition: display 1s ease-in-out 10s;
+  }
 
   .inputText,
   .displayText {
     width: 100%;
     min-height: 10rem;
     font-size: 2.5rem;
+    font-family: "Special Elite", system-ui;
     background-color: transparent;
     display: inline-block;
     position: absolute;
     overflow: hidden;
-    line-height: 1.5;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
   }
 
   .inputText {
@@ -72,11 +163,12 @@ html {
     font-size: 2rem;
     overflow: hidden;
     max-height: 10rem;
+    letter-spacing: 2px;
 
     .word {
       display: inline;
       height: max-content;
-      margin-right: 0.5rem;
+      margin-right: 0.7rem;
       padding-left: 0.1rem;
     }
   }
