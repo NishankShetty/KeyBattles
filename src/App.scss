@@ -127,10 +127,37 @@ html {
     transition: display 1s ease-in-out 10s;
   }
 
+  .invisible {
+    opacity: 0;
+    animation: none !important;
+  }
+
+  .insertion-point {
+    border-radius: 1rem;
+    display: inline-block;
+    width: 2px;
+    height: 2.5rem;
+    overflow: visible;
+    color: #e2b714;
+    font-size: 2rem;
+    animation: blink 0.5s steps(2, start) infinite;
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
   .inputText,
   .displayText {
     width: 100%;
-    min-height: 10rem;
+    min-height: 9rem;
+    // padding-bottom: 1rem;
     font-size: 2.5rem;
     font-family: "Special Elite", system-ui;
     background-color: transparent;
@@ -162,14 +189,22 @@ html {
     flex-wrap: wrap;
     font-size: 2rem;
     overflow: hidden;
-    max-height: 10rem;
-    letter-spacing: 2px;
+    max-height: 9rem;
+    // letter-spacing: 0.125rem;
 
     .word {
-      display: inline;
+      display: inline-block;
       height: max-content;
       margin-right: 0.7rem;
-      padding-left: 0.1rem;
+      margin-bottom: 0.5rem;
+      margin-top: 0.5rem;
+      // padding-left: 0.1rem;
+
+      .letter {
+        display: inline-block;
+        height: 2rem;
+        padding-left: 0.2rem;
+      }
     }
   }
 
@@ -195,22 +230,6 @@ html {
   min-height: 10rem;
   background-color: transparent; //rgb(191, 191, 191);
   display: flex;
-}
-
-.letter.cursor {
-  border-left: 2px solid rgb(226, 183, 20);
-  //animation: sideways ease 1s infinite;
-  display: inline-block;
-}
-
-@keyframes sideways {
-  0%,
-  100% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
 }
 
 .card {
