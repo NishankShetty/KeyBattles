@@ -265,7 +265,7 @@ const typingWords = [
   "proactive",
   "resilient",
   "sociable",
-  "team-player",
+  "team",
   "truthful",
   "vibrant",
   "youthful",
