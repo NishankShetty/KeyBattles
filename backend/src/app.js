@@ -24,26 +24,105 @@ app.get("/health", (req, res) => {
   res.json({ status: "OK" });
 });
 
+const activeRooms = new Map();
+// Create room endpoint
+app.post("/api/rooms", (req, res) => {
+  try {
+    const { username } = req.body;
+
+    const roomId = Math.random().toString(36).substring(2, 8);
+
+    // Store room data
+    activeRooms.set(roomId, {
+      players: [{ username, isHost: true }],
+      status: "waiting",
+      createdAt: Date.now(),
+      text: "Sample text for typing game", // You can add proper text generation later
+    });
+
+    console.log(`Room created: ${roomId}`);
+    res.status(201).json({ roomId });
+  } catch (error) {
+    console.error("Create room error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Check room endpoint
+app.get("/api/rooms/:roomId", (req, res) => {
+  const { roomId } = req.params;
+  const room = activeRooms.get(roomId);
+
+  if (!room) {
+    return res.status(404).json({ error: "Room not found" });
+  }
+
+  res.json(room);
+});
+
 // WebSocket connection handling
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  socket.on("joinRoom", (roomId) => {
-    socket.join(roomId);
-    console.log(`User ${socket.id} joined room ${roomId}`);
+  socket.on("joinRoom", ({ roomId, username }) => {
+    const room = activeRooms.get(roomId);
+
+    if (room) {
+      // Add player to room
+      room.players.push({ username, socketId: socket.id });
+      socket.join(roomId);
+
+      // Notify all clients in room about new player
+      io.to(roomId).emit("playerJoined", room.players);
+      console.log(`User ${username} joined room ${roomId}`);
+    }
   });
 
   socket.on("gameProgress", (data) => {
-    socket.to(data.roomId).emit("playerProgress", {
-      playerId: socket.id,
-      progress: data.progress,
-    });
+    const room = activeRooms.get(data.roomId);
+    if (room) {
+      socket.to(data.roomId).emit("playerProgress", {
+        playerId: socket.id,
+        username: data.username,
+        progress: data.progress,
+      });
+    }
   });
 
   socket.on("disconnect", () => {
+    // Remove player from any room they were in
+    activeRooms.forEach((room, roomId) => {
+      const playerIndex = room.players.findIndex(
+        (p) => p.socketId === socket.id
+      );
+      if (playerIndex !== -1) {
+        room.players.splice(playerIndex, 1);
+
+        // If room is empty, remove it
+        if (room.players.length === 0) {
+          activeRooms.delete(roomId);
+          console.log(`Room ${roomId} deleted - no players remaining`);
+        } else {
+          // Notify remaining players
+          io.to(roomId).emit("playerLeft", room.players);
+        }
+      }
+    });
     console.log("User disconnected:", socket.id);
   });
 });
+
+// Clean up inactive rooms every hour
+setInterval(() => {
+  const now = Date.now();
+  activeRooms.forEach((room, roomId) => {
+    if (now - room.createdAt > 24 * 60 * 60 * 1000) {
+      // 24 hours
+      activeRooms.delete(roomId);
+      console.log(`Room ${roomId} deleted - expired`);
+    }
+  });
+}, 60 * 60 * 1000);
 
 // Start server
 const PORT = process.env.PORT || 3000;
