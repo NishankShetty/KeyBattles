@@ -7,12 +7,14 @@ import { useRoomStore } from "../../../store/useRoomStore.jsx";
 import "../../../App.scss";
 
 function Game() {
-  const { joinRoom, updateProgress, initializeSocketListeners } =
-    useRoomStore();
+  const cleanup = useRoomStore((state) => state.cleanup);
+
   useEffect(() => {
-    initializeSocketListeners();
-    joinRoom("game123");
-  }, []);
+    // Cleanup socket connection when component unmounts
+    return () => {
+      cleanup();
+    };
+  }, [cleanup]);
 
   const handleProgress = (newProgress) => {
     updateProgress(newProgress);

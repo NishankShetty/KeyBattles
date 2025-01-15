@@ -1,19 +1,44 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRoomStore } from "../../../store/useRoomStore";
 
 function JoinLobby() {
   const [formData, setFormData] = useState({
     username: "",
     roomId: "",
   });
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const initializeGame = useRoomStore((state) => state.initializeGame);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Join lobby API call
-    navigate(`/game/${formData.roomId}`, {
-      state: { username: formData.username },
-    });
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/rooms/${formData.roomId}`
+      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Room not found");
+      }
+
+      // Initialize socket connection and join room
+      initializeGame(formData.roomId, formData.username);
+
+      // Navigate to game room
+      navigate(`/game/${formData.roomId}`, {
+        state: { username: formData.username },
+      });
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {

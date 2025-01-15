@@ -1,15 +1,49 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRoomStore } from "../../../store/useRoomStore";
 
 function CreateLobby() {
   const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const initializeGame = useRoomStore((state) => state.initializeGame);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Create lobby API call
-    const roomId = Math.random().toString(36).substring(2, 8);
-    navigate(`/game/${roomId}`, { state: { username } });
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:3000/api/rooms", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create lobby");
+      }
+
+      // Initialize socket connection and join room
+      initializeGame(data.roomId, username);
+
+      // Navigate to game room
+      navigate(`/game/${data.roomId}`, {
+        state: {
+          username,
+          isHost: true,
+        },
+      });
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -24,9 +58,13 @@ function CreateLobby() {
           required
           minLength={3}
           maxLength={15}
+          disabled={isLoading}
         />
       </div>
-      <button type="submit">Create Lobby</button>
+      {error && <div className="error-message">{error}</div>}
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? "Creating..." : "Create Lobby"}
+      </button>
     </form>
   );
 }
