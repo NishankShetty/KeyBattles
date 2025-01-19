@@ -27,12 +27,9 @@ function JoinLobby() {
         throw new Error(data.error || "Room not found");
       }
 
-      // Initialize socket connection and join room
-      initializeGame(formData.roomId, formData.username);
-
       // Navigate to game room
       navigate(`/game/${formData.roomId}`, {
-        state: { username: formData.username },
+        state: { username: formData.username, isHost: false },
       });
     } catch (error) {
       setError(error.message);
@@ -72,8 +69,8 @@ function JoinLobby() {
           value={formData.roomId}
           onChange={handleChange}
           required
-          minLength={7}
-          maxLength={7}
+          minLength={6}
+          maxLength={6}
         />
       </div>
       <button type="submit">Join Lobby</button>

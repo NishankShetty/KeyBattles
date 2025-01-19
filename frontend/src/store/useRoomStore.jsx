@@ -8,19 +8,26 @@ export const useRoomStore = create((set, get) => ({
   players: [],
 
   // Initialize socket and join room
-  initializeGame: (roomId, username) => {
+  initializeGame: (roomId, username, isHost) => {
+    console.log("Initializing game...", { roomId, username });
     const socket = io("http://localhost:3000");
 
     socket.on("connect", () => {
-      console.log("Connected to server");
-      socket.emit("joinRoom", { roomId, username });
+      console.log("Socket connected successfully");
+      socket.emit("joinRoom", { roomId, username, isHost: isHost });
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Socket disconnected"); // Add this to track disconnections
     });
 
     socket.on("playerJoined", (players) => {
+      console.log("Player joined, updating players:", players);
       set({ players });
     });
 
     socket.on("playerLeft", (players) => {
+      console.log("Player left, updating players:", players);
       set({ players });
     });
 
@@ -30,10 +37,12 @@ export const useRoomStore = create((set, get) => ({
     });
 
     set({ socket, roomId });
+    console.log("Game initialized with socket:", socket.id);
   },
 
   // Cleanup socket connection
   cleanup: () => {
+    console.log("Cleaning up socket connection...");
     const { socket } = get();
     if (socket) {
       socket.disconnect();

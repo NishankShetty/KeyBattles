@@ -30,7 +30,6 @@ function CreateLobby() {
       }
 
       // Initialize socket connection and join room
-      initializeGame(data.roomId, username);
 
       // Navigate to game room
       navigate(`/game/${data.roomId}`, {
