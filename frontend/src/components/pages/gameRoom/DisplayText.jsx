@@ -1,19 +1,15 @@
 import React, { useRef, useEffect } from "react";
 import { useGameStore } from "../../../store/useGameStore.jsx";
 import InsertionPoint from "./insertionPoint.jsx";
-import { words } from "../../utils/typingwords.jsx";
 
-const sampleText =
-  "examples of simple sentences include the following joe waited for the train was late mary and samantha took the bus"; // You can pass this as a prop if dynamic.
-
-function DisplayText() {
+function DisplayText({ words }) {
   const { userInput, inputArray, inputLocked, setUserInput, freezeInput } =
     useGameStore();
   console.log(inputArray);
   const userInputRef = useRef(userInput);
   const inputLockedRef = useRef(inputLocked);
   console.log("userInput from main():", userInput);
-  const wordsArray = words; //sampleText.split(" "); //[];
+  const wordsArray = words; //words; //sampleText.split(" "); //[];
   const inputRef = useRef(null);
   const divRef = useRef(null);
   let blurTimeout;

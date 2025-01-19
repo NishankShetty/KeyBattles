@@ -301,9 +301,9 @@ const typingWords = [
   "zany",
 ];
 
-function getRandomWords(wordsArray, count = 30) {
-  const shuffled = wordsArray.sort(() => 0.5 - Math.random());
+function getRandomWords(count = 30) {
+  const shuffled = typingWords.sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 }
 
-export const words = getRandomWords(typingWords, 30);
+export default getRandomWords;
