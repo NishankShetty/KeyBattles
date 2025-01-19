@@ -4,6 +4,7 @@ import http from "http";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import "dotenv/config";
+import generateWords from "./utils/generateTypingWords.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -11,7 +12,10 @@ const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL || "http://localhost:5173",
     methods: ["GET", "POST"],
+    credentials: true,
   },
+  pingTimeout: 60000,
+  transports: ["websocket", "polling"],
 });
 
 // Middleware
@@ -23,8 +27,11 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/health", (req, res) => {
   res.json({ status: "OK" });
 });
-
+//get activeRoom details
 const activeRooms = new Map();
+app.get("/roomsinfo", (req, res) => {
+  res.json({ activeRooms: Array.from(activeRooms.entries()) });
+});
 // Create room endpoint
 app.post("/api/rooms", (req, res) => {
   try {
@@ -34,14 +41,15 @@ app.post("/api/rooms", (req, res) => {
 
     // Store room data
     activeRooms.set(roomId, {
-      players: [{ username, isHost: true }],
+      players: [],
       status: "waiting",
       createdAt: Date.now(),
-      text: "Sample text for typing game", // You can add proper text generation later
+      text: generateWords(), //"Sample text for typing game", // You can add proper text generation later
     });
+    let roomInfo = activeRooms.get(roomId);
 
     console.log(`Room created: ${roomId}`);
-    res.status(201).json({ roomId });
+    res.status(201).json({ roomId, roomInfo });
   } catch (error) {
     console.error("Create room error:", error);
     res.status(500).json({ error: error.message });
@@ -64,12 +72,16 @@ app.get("/api/rooms/:roomId", (req, res) => {
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  socket.on("joinRoom", ({ roomId, username }) => {
+  socket.on("joinRoom", ({ roomId, username, isHost }) => {
     const room = activeRooms.get(roomId);
 
     if (room) {
       // Add player to room
-      room.players.push({ username, socketId: socket.id });
+      room.players.push({
+        username: username,
+        socketId: socket.id,
+        isHost: isHost,
+      });
       socket.join(roomId);
 
       // Notify all clients in room about new player
@@ -92,6 +104,9 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     // Remove player from any room they were in
     activeRooms.forEach((room, roomId) => {
+      // console.log("room=", room);
+      // console.log("roomId=", roomId);
+      // console.log("room.players=", room.players);
       const playerIndex = room.players.findIndex(
         (p) => p.socketId === socket.id
       );
@@ -109,6 +124,10 @@ io.on("connection", (socket) => {
       }
     });
     console.log("User disconnected:", socket.id);
+    console.log(
+      "Active Rooms:",
+      JSON.stringify(Array.from(activeRooms.entries()), null, 2)
+    );
   });
 });
 

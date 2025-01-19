@@ -1,19 +1,47 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRoomStore } from "../../../store/useRoomStore";
 
 function JoinLobby() {
   const [formData, setFormData] = useState({
     username: "",
     roomId: "",
   });
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const initializeGame = useRoomStore((state) => state.initializeGame);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Join lobby API call
-    navigate(`/game/${formData.roomId}`, {
-      state: { username: formData.username },
-    });
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/rooms/${formData.roomId}`
+      );
+      const data = await response.json();
+      console.log("data", data);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Room not found");
+      }
+
+      // Navigate to game room
+      navigate(`/game/${formData.roomId}`, {
+        state: {
+          username: formData.username,
+          isHost: false,
+          roomId: formData.roomId,
+          words: data.text,
+        },
+      });
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -47,8 +75,8 @@ function JoinLobby() {
           value={formData.roomId}
           onChange={handleChange}
           required
-          minLength={7}
-          maxLength={7}
+          minLength={6}
+          maxLength={6}
         />
       </div>
       <button type="submit">Join Lobby</button>
