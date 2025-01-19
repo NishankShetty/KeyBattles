@@ -10,13 +10,14 @@ import "../../../App.scss";
 function Game() {
   const location = useLocation();
   const { roomId } = useParams();
-  const { username, isHost } = location.state || {};
+  const { username, isHost, words } = location.state || {};
   const { initializeGame, cleanup, updateProgress } = useRoomStore();
 
   useEffect(() => {
     if (roomId && username) {
       // Initialize socket connection after component mount
       initializeGame(roomId, username, isHost);
+      console.log("words", words);
     }
 
     return () => {
@@ -32,7 +33,7 @@ function Game() {
     <>
       <Header />
       <PlayersInfo />
-      <DisplayTexts />
+      <DisplayTexts words={words} />
       <PowerUps />
     </>
   );

@@ -22,6 +22,7 @@ function JoinLobby() {
         `http://localhost:3000/api/rooms/${formData.roomId}`
       );
       const data = await response.json();
+      console.log("data", data);
 
       if (!response.ok) {
         throw new Error(data.error || "Room not found");
@@ -29,7 +30,12 @@ function JoinLobby() {
 
       // Navigate to game room
       navigate(`/game/${formData.roomId}`, {
-        state: { username: formData.username, isHost: false },
+        state: {
+          username: formData.username,
+          isHost: false,
+          roomId: formData.roomId,
+          words: data.text,
+        },
       });
     } catch (error) {
       setError(error.message);

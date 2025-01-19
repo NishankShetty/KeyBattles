@@ -30,12 +30,14 @@ function CreateLobby() {
       }
 
       // Initialize socket connection and join room
-
+      console.log("data", data);
       // Navigate to game room
       navigate(`/game/${data.roomId}`, {
         state: {
           username,
           isHost: true,
+          roomId: data.roomId,
+          words: data.roomInfo.text,
         },
       });
     } catch (error) {

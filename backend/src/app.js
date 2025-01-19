@@ -4,6 +4,7 @@ import http from "http";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
 import "dotenv/config";
+import generateWords from "./utils/generateTypingWords.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -29,7 +30,7 @@ app.get("/health", (req, res) => {
 //get activeRoom details
 const activeRooms = new Map();
 app.get("/roomsinfo", (req, res) => {
-  res.json({ activeRooms: activeRooms });
+  res.json({ activeRooms: Array.from(activeRooms.entries()) });
 });
 // Create room endpoint
 app.post("/api/rooms", (req, res) => {
@@ -43,11 +44,12 @@ app.post("/api/rooms", (req, res) => {
       players: [],
       status: "waiting",
       createdAt: Date.now(),
-      text: "Sample text for typing game", // You can add proper text generation later
+      text: generateWords(), //"Sample text for typing game", // You can add proper text generation later
     });
+    let roomInfo = activeRooms.get(roomId);
 
     console.log(`Room created: ${roomId}`);
-    res.status(201).json({ roomId });
+    res.status(201).json({ roomId, roomInfo });
   } catch (error) {
     console.error("Create room error:", error);
     res.status(500).json({ error: error.message });
