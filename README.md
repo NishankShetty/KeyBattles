@@ -1,32 +1,120 @@
-# Key-Racer
+# KeyRacer - Multiplayer Typing Race Game
 
-Key-Racer is a real-time, room-based multiplayer typing game built using React.js, Zustand, and Socket.io. The game enhances user interaction and engagement with a robust and scalable backend, a responsive interface, and efficient in-memory room management.
+**Developed at Stevens Institute of Technology**
+
+KeyRacer is a real-time multiplayer typing race game where players compete against each other to type text as quickly and accurately as possible. Built with React, Node.js, and Socket.IO for real-time gameplay.
 
 ## Features
 
-- **Real-time Multiplayer**: Experience the thrill of live multiplayer typing competitions with friends and players around the world.
-- **Scalable Backend**: Built with Node.js and Express.js, the backend integrates RESTful APIs for seamless room management and real-time player status updates.
-- **Efficient Room Management**: Supports custom lobby creation and joining mechanisms with unique room IDs.
-- **Responsive Interface**: Developed using Material-UI, ShadCn, and Framer Motion for a smooth and engaging user experience.
-- **Complex State Handling**: Managed using Zustand, ensuring predictable data flow and real-time game progress tracking.
-- **Event-Driven Architecture**: Implemented for real-time updates, improving scalability and maintainability.
-- **Asynchronous Messaging**: Utilized RabbitMQ for task queueing and handling concurrency issues in real-time gameplay.
+- Real-time multiplayer typing races
+- Create and join game rooms with custom lobby creation
+- Live progress tracking
+- Power-ups system
+- Word accuracy tracking
+- Clean, minimalist UI
+- Responsive and user-friendly interface with Material-UI, ShadCn, and Framer Motion
+- Efficient in-memory room management system with unique room IDs
+- Complex state handling using Zustand for predictable data flow and real-time game progress tracking
+- Event-driven architecture for real-time updates and improved scalability
+- Asynchronous messaging and task queueing with RabbitMQ for scalability and concurrency
 
-## Technologies Used
+## Tech Stack
 
-- **Frontend**: React.js, Material-UI, ShadCn, Framer Motion, Zustand
-- **Backend**: Node.js, Express.js, Socket.io, RabbitMQ
-- **Architecture**: Event-driven, in-memory room management
+### Frontend
+- React 18
+- Vite
+- Socket.IO Client
+- Zustand (State Management)
+- Material-UI
+- SASS
+- React Router DOM
+- ShadCn
+- Framer Motion
 
-## Getting Started
-
-### Prerequisites
-
+### Backend
 - Node.js
+- Express
+- Socket.IO
+- MongoDB (prepared for future use)
+- CORS
+- RabbitMQ
+
+## Prerequisites
+
+- Node.js (v16 or higher)
 - npm or yarn
+- MongoDB (optional, for future features)
 
-### Installation
+## Installation
 
-1. Clone the repository:
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/yourusername/key-racer.git
+   cd keyracer
+   ```
+2. Install Backend Dependencies
+   ```bash
+   cd backend
+   npm install
+   ```
+3. Install Frontend Dependencies
+   ```bash
+   cd frontend
+   npm install
+   ```
+Create a `.env` file in the backend directory:
+4. Configure Environment Variables
+   ```bash
+   env
+   PORT=3000
+   MONGODB_URI=your_mongodb_uri
+   RABBITMQ_URL=your_rabbitmq_url
+   FRONTEND_URL=http://localhost:5173
+   ```
+
+## Running the Application
+
+1. Start the Backend Server
+   ```bash
+   cd backend
+   npm run dev
+   ```
+   
+2. Start the Frontend Development Server
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   
+The application will be available at:
+- Frontend: http://localhost:5173
+- Backend: http://localhost:3000
+
+## Game Rules
+
+1. Create a new game room or join an existing one
+2. Wait for other players to join
+3. Type the displayed text as quickly and accurately as possible
+4. Use power-ups strategically to gain advantages
+5. First player to complete the text wins!
+
+## Project Structure
+```bash
+keyracer/
+├── frontend/
+│ ├── src/
+│ │ ├── components/
+│ │ ├── store/
+│ │ └── assets/
+│ ├── public/
+│ └── package.json
+└── backend/
+├── src/
+│ ├── controllers/
+│ ├── models/
+│ ├── routes/
+│ ├── utils/
+│ └── app.js
+└── package.json
+```
+
