@@ -1,6 +1,5 @@
 # KeyRacer - Multiplayer Typing Race Game
 
-**Developed at Stevens Institute of Technology**
 
 KeyRacer is a real-time multiplayer typing race game where players compete against each other to type text as quickly and accurately as possible. Built with React, Node.js, and Socket.IO for real-time gameplay.
 
@@ -117,4 +116,7 @@ keyracer/
 │ └── app.js
 └── package.json
 ```
+## License
+
+This project is licensed under the MIT License.
 
