@@ -44,7 +44,7 @@ app.post("/api/rooms", (req, res) => {
       players: [],
       status: "waiting",
       createdAt: Date.now(),
-      text: generateWords(), //"Sample text for typing game", // You can add proper text generation later
+      text: generateWords(30), //"Sample text for typing game", // You can add proper text generation later
     });
     let roomInfo = activeRooms.get(roomId);
 
@@ -81,6 +81,10 @@ io.on("connection", (socket) => {
         username: username,
         socketId: socket.id,
         isHost: isHost,
+        stats: {
+          accuracy: 0,
+          progress: 0,
+        },
       });
       socket.join(roomId);
 
@@ -94,11 +98,11 @@ io.on("connection", (socket) => {
     const room = activeRooms.get(data.roomId);
     if (room) {
       socket.to(data.roomId).emit("playerProgress", {
-        playerId: socket.id,
-        username: data.username,
-        progress: data.progress,
+        socketId: socket.id,
+        stats: data.stats,
       });
     }
+    console.log("gameProgress Data:", JSON.stringify(data));
   });
 
   socket.on("disconnect", () => {
