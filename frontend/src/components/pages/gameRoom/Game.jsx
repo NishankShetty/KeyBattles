@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import Header from "./Header.jsx";
 import PlayersInfo from "./PlayersInfo.jsx";
 import DisplayTexts from "./DisplayText.jsx";
@@ -7,22 +8,28 @@ import { useRoomStore } from "../../../store/useRoomStore.jsx";
 import "../../../App.scss";
 
 function Game() {
-  const { joinRoom, updateProgress, initializeSocketListeners } =
-    useRoomStore();
-  useEffect(() => {
-    initializeSocketListeners();
-    joinRoom("game123");
-  }, []);
+  const location = useLocation();
+  const { roomId } = useParams();
+  const { username, isHost, words } = location.state || {};
+  const { initializeGame, cleanup } = useRoomStore();
 
-  const handleProgress = (newProgress) => {
-    updateProgress(newProgress);
-  };
+  useEffect(() => {
+    if (roomId && username) {
+      // Initialize socket connection after component mount
+      initializeGame(roomId, username, isHost);
+      console.log("words", words);
+    }
+
+    return () => {
+      cleanup();
+    };
+  }, []);
 
   return (
     <>
       <Header />
       <PlayersInfo />
-      <DisplayTexts />
+      <DisplayTexts words={words} />
       <PowerUps />
     </>
   );
