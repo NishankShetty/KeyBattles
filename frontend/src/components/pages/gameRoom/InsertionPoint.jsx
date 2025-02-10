@@ -3,7 +3,7 @@ import { useGameStore } from "../../../store/useGameStore.jsx";
 
 export default function InsertionPoint() {
   const inputArray = useGameStore.getState().inputArray;
-  console.log(inputArray);
+  //console.log(inputArray);
 
   const [top, setTop] = useState(0);
   const [left, setLeft] = useState(0);
@@ -11,14 +11,14 @@ export default function InsertionPoint() {
   useEffect(() => {
     const currentWordNo = inputArray.length;
     const currentLetterNo = inputArray[currentWordNo - 1].length;
-    console.log("CurrentLetterNo:", currentLetterNo);
-    console.log("CurrentWordNo", currentWordNo);
+    //console.log("CurrentLetterNo:", currentLetterNo);
+    //console.log("CurrentWordNo", currentWordNo);
 
     const displayTextDiv = document.querySelector(".displayText");
     const currentWordDiv = document.querySelector(
       `.displayText > :nth-child(${currentWordNo})`
     );
-    console.log(currentWordDiv);
+    //console.log(currentWordDiv);
 
     const displayText = displayTextDiv.getBoundingClientRect();
     const currentWord = currentWordDiv.getBoundingClientRect();
@@ -31,15 +31,15 @@ export default function InsertionPoint() {
         `.displayText > :nth-child(${currentWordNo}) > :nth-child(${currentLetterNo})`
       );
       currentLetter = currentLetterDiv.getBoundingClientRect();
-      console.log("currentLetterDiv:", currentLetterDiv);
-      console.log("currentLetter:", currentLetter);
+      // console.log("currentLetterDiv:", currentLetterDiv);
+      // console.log("currentLetter:", currentLetter);
       RelativeLeftLetter = currentLetter.right - currentWord.left;
-      console.log(RelativeLeftLetter);
+      // console.log(RelativeLeftLetter);
     }
 
-    console.log("displayText:", displayText);
-    console.log("currentWord:", currentWord);
-    console.log("currentLetter", currentLetter);
+    // console.log("displayText:", displayText);
+    // console.log("currentWord:", currentWord);
+    // console.log("currentLetter", currentLetter);
 
     const RelativeTop = currentWord.top - displayText.top;
     const RelativeLeft = currentWord.left - displayText.left;

@@ -73,6 +73,20 @@ html {
       width: 15%;
       // background-color: green;
     }
+
+    &.current-player {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      padding: 0.5rem;
+
+      .progress-bar {
+        background-color: #e2b714; // Different color for current player
+      }
+
+      .userName {
+        font-weight: bold;
+      }
+    }
   }
 }
 
