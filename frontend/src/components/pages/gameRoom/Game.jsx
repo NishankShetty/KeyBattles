@@ -11,7 +11,7 @@ function Game() {
   const location = useLocation();
   const { roomId } = useParams();
   const { username, isHost, words } = location.state || {};
-  const { initializeGame, cleanup, updateProgress } = useRoomStore();
+  const { initializeGame, cleanup } = useRoomStore();
 
   useEffect(() => {
     if (roomId && username) {
@@ -24,10 +24,6 @@ function Game() {
       cleanup();
     };
   }, []);
-
-  const handleProgress = (newProgress) => {
-    updateProgress(newProgress);
-  };
 
   return (
     <>

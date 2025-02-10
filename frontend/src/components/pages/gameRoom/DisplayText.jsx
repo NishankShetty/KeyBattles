@@ -1,14 +1,26 @@
 import React, { useRef, useEffect } from "react";
 import { useGameStore } from "../../../store/useGameStore.jsx";
+import { useRoomStore } from "../../../store/useRoomStore.jsx";
+import { useMetricsStore } from "../../../store/useMetricsStore.jsx";
 import InsertionPoint from "./insertionPoint.jsx";
 
 function DisplayText({ words }) {
   const { userInput, inputArray, inputLocked, setUserInput, freezeInput } =
     useGameStore();
-  console.log(inputArray);
+  const {
+    correct,
+    incorrect,
+    setIncorrectIndices,
+    incorrectIndices,
+    setProgress,
+    setCorrect,
+    setCalAcc,
+  } = useMetricsStore.getState();
+  const { updateProgress } = useRoomStore.getState();
+  //console.log(inputArray);
   const userInputRef = useRef(userInput);
   const inputLockedRef = useRef(inputLocked);
-  console.log("userInput from main():", userInput);
+  //console.log("userInput from main():", userInput);
   const wordsArray = words; //words; //sampleText.split(" "); //[];
   const inputRef = useRef(null);
   const divRef = useRef(null);
@@ -20,8 +32,6 @@ function DisplayText({ words }) {
   }, [userInput, inputLocked]);
 
   const handleText = (event) => {
-    console.log("event:", event);
-    console.log("userInput from the handleText():", userInputRef.current);
     if (!inputLockedRef.current) {
       let input;
       switch (true) {
@@ -40,12 +50,80 @@ function DisplayText({ words }) {
           break;
         case /^[A-Za-z\s]+$/.test(event.key):
           input = userInputRef.current + event.key;
-          console.log("input:", input);
+          //console.log("input:", input);
           break;
         default:
           input = userInputRef.current;
       }
       setUserInput(input);
+
+      // Calculate stats and progress
+      const calculateStats = (input, words, incorrect) => {
+        const incorrectBefore = incorrect;
+        console.log("incorrectBefore:", incorrectBefore);
+        const inputWordsArr = input.split(" ");
+        const inputWordsLen = inputWordsArr.length;
+        const inputLastWordInd = inputWordsLen - 1;
+        const inputLastWord = inputWordsArr[inputLastWordInd];
+        // console.log("inputWordsArr", inputWordsArr);
+        // console.log("inputWordsLen", inputWordsLen);
+        // console.log("inputLastWordInd", inputLastWordInd);
+        // console.log("inputLastWord", inputLastWord);
+        //calculate the progress
+        const progress = Math.min(
+          (input === "" ? 0 : inputWordsLen / words.length) * 100,
+          100
+        );
+        setProgress(progress);
+        //calculate the incorrect
+        if (inputLastWord) {
+          if (inputLastWord.length <= words[inputLastWordInd].length) {
+            if (
+              inputLastWord[inputLastWord.length - 1] !==
+              words[inputLastWordInd][inputLastWord.length - 1]
+            ) {
+              //set incorrectindices here
+              setIncorrectIndices(
+                inputLastWordInd * 1000 + inputLastWord.length - 1
+              );
+              console.log(
+                "incorrectIndices:",
+                useMetricsStore.getState().incorrectIndices
+              );
+              console.log("incorrect from inside the loop:", incorrect + 1);
+            }
+          } else {
+            setIncorrectIndices(
+              inputLastWordInd * 1000 + inputLastWord.length - 1
+            );
+          }
+        }
+        console.log("incorrect:", useMetricsStore.getState().incorrect);
+        //calculate the correct
+        let correct = 0;
+        inputWordsArr.forEach((word, wordIndex) => {
+          word.split("").forEach((char, charIndex) => {
+            if (
+              words[wordIndex][charIndex] &&
+              words[wordIndex][charIndex] === char
+            ) {
+              correct++;
+            }
+          });
+        });
+        setCorrect(correct);
+        setCalAcc();
+        console.log("Accuracy:", useMetricsStore.getState().accuracy);
+        console.log("Correct:", useMetricsStore.getState().correct);
+      };
+      if (words && words.length > 0) {
+        calculateStats(input, words, incorrect);
+        console.log("stats:", useMetricsStore.getState().stats);
+        useRoomStore
+          .getState()
+          .updateProgress(useMetricsStore.getState().stats); // this will updateprogress to server through the Roomstore
+      }
+      //send playerprogress through socket to server
     }
   };
 
